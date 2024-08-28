@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: 
+                linear-gradient(
+                    rgba(0, 0, 230, 0.9), /* Almost black overlay */
+                    rgba(0, 10, 80, 0.7)
+                ),
+                url('static/bg1.jpeg'); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: overlay; /* Blend the gradient with the image */
+        }
+
+        .container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent white */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: red; /* Red text color */
+        }
+
+        pre {
+            font-family: monospace;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: black; /* Black text color */
+        }
+
+        p {
+            margin-bottom: 10px;
+            color: white; /* White text color */
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            color: white; /* White text color for the label */
+            font-size: 1.2em;
+        }
+
+        input[type="text"] {
+            font-size: 1.2em;
+            text-align: center;
+            padding: 5px;
+            width: 50px;
+            margin-right: 10px;
+            border: 2px solid black; /* Black border */
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2); /* Slightly transparent background */
+            color: black; /* Black text color */
+        }
+
+        button {
+            font-size: 1.2em;
+            padding: 5px 15px;
+            background-color: white; /* White background */
+            color: black; /* Black text color */
+            border: 2px solid white; /* White border */
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: rgb(200, 200, 200); /* Slightly darker on hover */
+        }
+
+        .correct {
+            color: yellow; /* Yellow text for correct guesses */
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .incorrect {
+            color: black; /* Black text for incorrect guesses */
+            font-weight: bold;
+        }
+
+        .d1 {
+            background-color: white;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        .inst {
+            color: black;
+        }
+
+        .code {
+            background-color: black;
+            padding-top: 1px;
+            padding-bottom: 1px;
+        }
+
+        .incorrect-message {
+            color: red; /* Red text color for incorrect message */
+            font-size: 1rem; /* Adjust size if needed */
+            background-color:black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="d1">
+            <h1>Hangman Game</h1>
+            <p class="inst">Save your friend from being hanged by guessing the letters in the codeword.</p>
+        </div>
+        <br><br>
+        <pre>{{ stage }}</pre>
+
+        <p>Incorrect Guesses:
+            {% for letter in session['incorrect'] %}
+                <span class="incorrect">{{ letter }}</span>
+            {% endfor %}
+        </p>
+
+        <div class="code">
+            <p>Codeword:
+                {% for letter in session['answer'] %}
+                    {% if letter != '_' %}
+                        <span class="correct">{{ letter }}</span>
+                    {% else %}
+                        {{ letter }}
+                    {% endif %}
+                {% endfor %}
+            </p>
+        </div>
+
+        <p>Chances left: {{ session['max_misses'] - session['misses'] }}</p>
+
+        <p class="incorrect-message">{{ session['message'] }}</p>
+
+        <form method="POST">
+            <label for="letter">Enter a letter:</label>
+            <input type="text" name="letter" maxlength="1" required>
+            <button type="submit">Guess</button>
+        </form>
+    </div>
+</body>
+
+</html>

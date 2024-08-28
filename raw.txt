@@ -1,0 +1,327 @@
+index
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        pre {
+            font-family: monospace;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        input[type="text"] {
+            font-size: 1.2em;
+            text-align: center;
+            padding: 5px;
+            width: 50px;
+            margin-right: 10px;
+        }
+
+        button {
+            font-size: 1.2em;
+            padding: 5px 15px;
+        }
+
+        hr {
+            margin: 20px 0;
+            border: none;
+            border-top: 2px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Hangman Game</h1>
+        <p>Instructions: Save your friend from being hanged by guessing the letters in the codeword.</p>
+        <hr>
+
+        <pre>{{ stage }}</pre>
+
+        <p>Incorrect Guesses: 
+        {% for letter in session['incorrect'] %}
+            {{ letter }}
+        {% endfor %}
+        </p>
+
+        <p>Codeword: 
+        {% for letter in session['answer'] %}
+            {{ letter }} 
+        {% endfor %}
+        </p>
+
+        <p>Chances left: {{ session['max_misses'] - session['misses'] }}</p>
+
+        <p>{{ session['message'] }}</p>
+
+        <form method="POST">
+            <label for="letter">Enter a letter:</label>
+            <input type="text" name="letter" maxlength="1" required>
+            <button type="submit">Guess</button>
+        </form>
+    </div>
+</body>
+
+</html>
+
+****************************************************************
+end_game
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Over</title>
+    <style>
+        pre {
+            font-family: monospace;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Over</h1>
+    
+    <pre>{{ stage }}</pre>
+
+    <p>
+        {% if result == 'win' %}
+            Congratulations! You saved the person and won the game!
+        {% else %}
+            Sorry! The person was hanged. Better luck next time.
+        {% endif %}
+    </p>
+
+    <form method="POST">
+        <button type="submit" name="new_game">Start New Game</button>
+        <button type="submit" name="exit">Exit</button>
+    </form>
+</body>
+</html>
+
+***********************************************************
+
+result
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        .result {
+            text-align: center;
+        }
+        a {
+            display: block;
+            margin-top: 20px;
+            font-size: 18px;
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="result">
+        {% if answer == codeword %}
+            <h1>Hooray! You saved the person!</h1>
+            <p>The codeword was: {{ codeword }}</p>
+        {% else %}
+            <h1>Oh no! The man is hanged!</h1>
+            <p>The codeword was: {{ codeword }}</p>
+        {% endif %}
+        <a href="/">Play Again</a>
+    </div>
+</body>
+</html>
+
+
+***********************************************
+
+app.py 
+
+from flask import Flask, render_template, request, redirect, url_for, session
+import random
+
+app = Flask(__name__)
+app.secret_key = 'hangman_secret_key'
+
+# Predefined list of words
+words = ['python', 'flask', 'hangman', 'coding', 'programming', 'developer', 'iamrani']
+
+# Hangman stages as diagrams
+stages = [
+    """
+     +---+
+         |
+         |
+         |
+         |
+         |
+    =========
+    """,
+    """
+     +---+
+     O   |
+         |
+         |
+         |
+         |
+    =========
+    """,
+    """
+     +---+
+     O   |
+     |   |
+         |
+         |
+         |
+    =========
+    """,
+    """
+     +---+
+     O   |
+    /|   |
+         |
+         |
+         |
+    =========
+    """,
+    """
+     +---+
+     O   |
+    /|\\  |
+         |
+         |
+         |
+    =========
+    """,
+    """
+     +---+
+     O   |
+    /|\\  |
+    /    |
+         |
+         |
+    =========
+    """,
+    """
+     +---+
+     O   |
+    /|\\  |
+    / \\  |
+         |
+         |
+    =========
+    """
+]
+
+def reset_game():
+    session['codeword'] = random.choice(words)
+    session['answer'] = ['_'] * len(session['codeword'])
+    session['incorrect'] = []
+    session['misses'] = 0
+    session['max_misses'] = len(stages) - 1  # Maximum chances
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if 'codeword' not in session:
+        reset_game()
+
+    if request.method == 'POST':
+        if 'letter' in request.form:
+            letter = request.form.get('letter').lower()
+            guess = False
+
+            for i, char in enumerate(session['codeword']):
+                if letter == char:
+                    session['answer'][i] = letter
+                    guess = True
+
+            if guess:
+                session['message'] = "Correct!"
+            else:
+                session['message'] = "Incorrect! Another portion of the person has been drawn."
+                session['incorrect'].append(letter)
+                session['misses'] += 1
+
+            # Check if game has ended
+            if ''.join(session['answer']) == session['codeword']:
+                session['message'] = "Hooray! You saved the person from being hanged and earned a medal of honor! Congratulations!"
+                return redirect(url_for('end_game', result='win'))
+            elif session['misses'] >= session['max_misses']:
+                session['message'] = f"Oh no! The person was hanged. The word was '{session['codeword']}'."
+                return redirect(url_for('end_game', result='lose'))
+
+    # Ensure misses are within the valid range for stages
+    stage_index = min(session['misses'], len(stages) - 1)
+    return render_template('index.html', stage=stages[stage_index])
+
+@app.route('/end_game/<result>', methods=['GET', 'POST'])
+def end_game(result):
+    if request.method == 'POST':
+        if 'new_game' in request.form:
+            reset_game()
+            return redirect(url_for('index'))
+        elif 'exit' in request.form:
+            return "Thank you for playing! Goodbye!"
+
+    # Ensure misses are within the valid range for stages
+    stage_index = min(session['misses'], len(stages) - 1)
+    return render_template('end_game.html', result=result, stage=stages[stage_index])
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+************************
+                linear-gradient(
+                    rgba(5, 10, 36, 0.9), /* Almost black overlay */
+                    rgba(30, 90, 0, 0.7)
+                ),

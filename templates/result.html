@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        .result {
+            text-align: center;
+        }
+        a {
+            display: block;
+            margin-top: 20px;
+            font-size: 18px;
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="result">
+        {% if answer == codeword %}
+            <h1>Hooray! You saved the person!</h1>
+            <p>The codeword was: {{ codeword }}</p>
+        {% else %}
+            <h1>Oh no! The man is hanged!</h1>
+            <p>The codeword was: {{ codeword }}</p>
+        {% endif %}
+        <a href="/">Play Again</a>
+    </div>
+</body>
+</html>
