@@ -5,7 +5,7 @@ app = Flask(__name__)
 app.secret_key = 'hangman_secret_key'
 
 # Predefined list of words
-words = ['python', 'flask', 'hangman', 'coding', 'program', 'developer', 'iamrani', 'gaming', 'night', 'letter']
+words = ['python', 'flask', 'hangman', 'coding', 'program', 'developer', 'iamrani', 'gaming', 'night', 'letter', 'algorithm', 'function', 'database', 'framework', 'machine', 'learning', 'artificial', 'intelligence', 'development', 'frontend', 'backend', 'api', 'security', 'server', 'client', 'pitter', 'javascript', 'html', 'css', 'docker']
 
 # Hangman stages as diagrams
 stages = [
