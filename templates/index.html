@@ -35,6 +35,7 @@
             margin-bottom: 10px;
             color: red; /* Red text color */
             font-size: 3rem;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 2); /* Dark shadow effect */
         }
 
         pre {
@@ -42,6 +43,7 @@
             font-size: 1.2em;
             margin-bottom: 20px;
             color: black; /* Black text color */
+            background-color:white;
         }
 
         p {
@@ -50,9 +52,15 @@
         }
 
         a {
-            color: black; /* Blue link color */
+            color: darkblue; /* Black link color */
             cursor: pointer;
             text-decoration: underline;
+        }
+
+        .read-instructions-link {
+            display: inline-block; /* Aligns the link properly */
+            margin-bottom: 10px; /* Space below the link */
+            text-align: left; /* Align the link to the left */
         }
 
         form {
@@ -108,6 +116,7 @@
         .d1 {
             padding-left: 5px;
             padding-right: 5px;
+            text-align: left; /* Aligns text and elements inside to the left */
         }
 
         .inst {
@@ -129,10 +138,34 @@
         }
 
         .chance {
-            color: red; /* Black text color for chances left */
+            color: red; /* Red text color for chances left */
             font-size: 1em; /* Adjust font size if needed */
             background-color:white;
         }
+
+        /* Keyframes for the falling animation */
+@keyframes fall {
+    0% {
+        transform: translateY(-100vh); /* Start above the viewport */
+        opacity: 0; /* Start invisible */
+    }
+    50% {
+        opacity: 1; /* Fully visible */
+    }
+    100% {
+        transform: translateY(0); /* End at its final position */
+    }
+}
+
+/* Apply the animation to the h1 element */
+h1 {
+    margin-bottom: 10px;
+    color: red; /* Red text color */
+    font-size: 3rem;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 2); /* Dark shadow effect */
+    animation: fall 1s ease-out; /* Animation for falling effect */
+}
+
     </style>
 </head>
 
@@ -140,7 +173,7 @@
     <div class="container">
         <div class="d1">
             <h1>Hangman Game</h1>
-            <a href="#" onclick="toggleInstructions()">Read Instructions</a>
+            <a href="#" class="read-instructions-link" onclick="toggleInstructions()">Read Instructions</a>
             <p id="instructions" class="inst">The Hangman Game is a simple game where the player guesses the correct letters (A-Z) to form the word.
                 If the player guesses the right letter that is within the word, the letter appears at its correct positions.
                 The player has to guess the correct word until the guessing chance becomes zero, then the game is over.<br> Save your friend from being hanged by guessing the letters in the codeword.</p>
