@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,37 +12,38 @@
             height: 100vh;
             margin: 0;
             background: linear-gradient(
-                rgba(145, 90, 36, 0.9), /* Light green overlay */
-                rgba(0,10, 80, 0.7)   /* Dark green overlay */
+                rgba(15, 10, 36, 1),
+                rgba(250, 10, 80, 0.6)
             ),
-            url('your-image-url.jpg'); /* Replace with your image URL */
+            url('your-image-url.jpg');
             background-size: cover;
             background-position: center;
-            background-blend-mode: overlay; /* Blend the gradient with the image */
+            background-blend-mode: overlay;
         }
 
         .container {
             text-align: center;
-            background-color: rgba(205, 110, 205, 0.1); /* Slightly transparent white */
+            background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(3, 0, 0, 0.5);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         h1 {
             margin-bottom: 20px;
-            color: black; /* Red text color */
+            font-size: 4em;
+            color: black;
         }
 
         pre {
             font-family: monospace;
             font-size: 1.2em;
-            color: black; /* Black text color */
+            color: black;
         }
 
         p {
             margin-bottom: 10px;
-            color: white; /* White text color */
+            color: black;
         }
 
         button {
@@ -51,45 +51,86 @@
             padding: 10px 20px;
             border-radius: 5px;
             border: none;
-            color: white; /* White text color */
+            color: white;
             cursor: pointer;
             margin: 5px;
         }
 
         .start-new-game {
-            background-color: green; /* Green background */
+            background-color: green;
         }
 
         .exit {
-            background-color: red; /* Red background */
+            background-color: red;
         }
 
         .start-new-game:hover {
-            background-color: darkgreen; /* Darker green on hover */
+            background-color: darkgreen;
         }
 
         .exit:hover {
-            background-color: darkred; /* Darker red on hover */
+            background-color: darkred;
         }
 
         .result-win {
-            color: green; /* Green text color for win message */
+            color: green;
             font-weight: bold;
         }
 
         .result-lose {
-            color: yellow; /* Red text color for lose message */
+            color: red;
             font-weight: bold;
         }
-    </style>
-</head>
 
+        @keyframes fall {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
+        }
+
+        .sad-face {
+            font-size: 3em;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: fall 3s linear infinite;
+        }
+    </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            const result = "{{ result }}";
+            
+            if (result === 'win') {
+                function launchConfetti() {
+                    confetti({
+                        particleCount: 200,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                }
+                
+                launchConfetti();
+                // Repeat confetti every 3 seconds
+                const confettiInterval = setInterval(launchConfetti, 3000);
+                
+                // Stop confetti animation if the user starts a new game or exits
+                document.querySelector('form').addEventListener('submit', function() {
+                    clearInterval(confettiInterval);
+                });
+            } else if (result === 'lose') {
+                const sadFace = document.createElement('div');
+                sadFace.className = 'sad-face';
+                sadFace.textContent = '😢';
+                document.body.appendChild(sadFace);
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+</head>
 <body>
     <div class="container">
         <h1>Game Over</h1>
-        
         <pre>{{ stage }}</pre>
-
         <p class="{% if result == 'win' %}result-win{% else %}result-lose{% endif %}">
             {% if result == 'win' %}
                 Congratulations! You saved the person and won the game!
@@ -97,12 +138,10 @@
                 Sorry! The person was hanged. Better luck next time.
             {% endif %}
         </p>
-
         <form method="POST">
             <button type="submit" name="new_game" class="start-new-game">Start New Game</button>
             <button type="submit" name="exit" class="exit">Exit</button>
         </form>
     </div>
 </body>
-
 </html>
