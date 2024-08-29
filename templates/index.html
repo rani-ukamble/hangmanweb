@@ -127,6 +127,11 @@
             font-size: 1rem; /* Adjust size if needed */
             background-color: black;
         }
+
+        .chance {
+            color: black; /* Black text color for chances left */
+            font-size: 1.2em; /* Adjust font size if needed */
+        }
     </style>
 </head>
 
@@ -160,7 +165,7 @@
             </p>
         </div>
 
-        <p>Chances left: {{ session['max_misses'] - session['misses'] }}</p>
+        <p class="chance">Chances left: {{ session['max_misses'] - session['misses'] }}</p>
 
         <p class="incorrect-message">{{ session['message'] }}</p>
 
